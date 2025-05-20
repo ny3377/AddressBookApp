@@ -1,45 +1,39 @@
 package com.yeshovardhan.addressbook.service;
 
-import com.yeshovardhan.addressbook.dto.AddressBookDTO;
 import com.yeshovardhan.addressbook.model.AddressBook;
+import com.yeshovardhan.addressbook.dto.AddressBookDTO;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class AddressBookService {
-
     private final List<AddressBook> addressBookList = new ArrayList<>();
-    private final AtomicInteger idGenerator = new AtomicInteger(0);
+    private int counter = 1;
 
     public List<AddressBook> getAll() {
         return addressBookList;
     }
 
     public AddressBook getById(int id) {
-        return addressBookList.stream()
-                .filter(entry -> entry.getId() == id)
-                .findFirst()
-                .orElse(null);
+        return addressBookList.stream().filter(a -> a.getId() == id).findFirst().orElse(null);
     }
 
     public AddressBook add(AddressBookDTO dto) {
-        AddressBook entry = new AddressBook();
-        addressBookList.add(entry);
-        return entry;
+        AddressBook ab = new AddressBook(counter++, dto.getName(), dto.getAddress());
+        addressBookList.add(ab);
+        return ab;
     }
 
     public AddressBook update(int id, AddressBookDTO dto) {
-        AddressBook existing = getById(id);
-        if (existing != null) {
-            existing.setName(dto.getName());
-            existing.setAddress(dto.getAddress());
+        AddressBook ab = getById(id);
+        if (ab != null) {
+            ab.setName(dto.getName());
+            ab.setAddress(dto.getAddress());
         }
-        return existing;
+        return ab;
     }
 
     public boolean delete(int id) {
-        return addressBookList.removeIf(entry -> entry.getId() == id);
+        return addressBookList.removeIf(ab -> ab.getId() == id);
     }
 }
